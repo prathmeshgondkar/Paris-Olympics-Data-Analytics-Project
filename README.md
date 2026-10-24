@@ -1,123 +1,46 @@
-# 🏅 Paris 2024 Olympics – End-to-End Data Analytics Pipeline on Azure
+# Paris 2024 Olympics – End-to-End Azure Data Pipeline
 
-A full-scale, cloud-native data project built to simulate and analyse the Paris 2024 Olympics using Microsoft Azure. This end-to-end pipeline covers everything from data ingestion to dashboarding, integrating tools like **Azure Data Factory**, **Databricks**, **Synapse Analytics**, **Power BI**, **Python**, and **Apache Spark**.
+A portfolio project I built to learn the Azure data stack end to end, using Paris 2024 Olympics data as the subject. Data Factory ingests the source files, Databricks cleans and joins them, Synapse serves them as SQL, and Power BI sits on top.
 
-> 💡 Built as a portfolio-grade project to demonstrate real-world data engineering, project orchestration, and cloud architecture skills.
+![Pipeline architecture](Pipeline.png)
 
----
+## The pipeline
 
-## 🚀 Project Goals
+| Stage | Service | What it does |
+|---|---|---|
+| Ingestion | Azure Data Factory | Copy Data activities pull each dataset (athletes, coaches, medals, teams, entries by gender) from GitHub into the raw zone, in dependency order |
+| Raw storage | Data Lake Storage Gen2 | Raw files kept untouched so transformations stay reproducible |
+| Transformation | Azure Databricks (PySpark, SQL) | Fix invalid IDs and country codes, standardise names, join athletes to teams and medals, derive participation metrics |
+| Curated storage | Data Lake Storage Gen2 | Transformed zone, separate from raw |
+| Query layer | Azure Synapse Analytics (serverless SQL) | External tables and views over the curated files: medal tally, participation summary, teams by country |
+| Visualisation | Power BI | Medals by country (map), participation by sport and gender, medal distribution, teams by country |
 
-- Build a complete Azure data pipeline for Olympic analytics
-- Simulate datasets using a mix of synthetic (ChatGPT) and real-world (Kaggle) data
-- Design a cross-region architecture for latency and cost optimisation
-- Transform and analyse data using Spark and SQL
-- Create interactive dashboards with Power BI for insights
+Data Factory ran in Southeast Asia and Databricks plus the data lake in Canada Central. That was deliberate: I wanted to see what cross-region latency and egress actually looked like in a pipeline rather than read about it.
 
----
+![Power BI dashboard](Dashboard.png)
 
-## 🧰 Tools & Technologies
+## Data
 
-|      Layer        |                 Tools / Skills                          |
-|-------------------|---------------------------------------------------------|
-| Ingestion         | Azure Data Factory                                      |
-| Storage           | Azure Data Lake Storage Gen2                            |
-| Transformation    | Azure Databricks (Apache Spark, PySpark)                |
-| Aggregation       | Azure Synapse Analytics (Serverless SQL)                |
-| Visualisation     | Power BI, Excel                                         |
-| Languages Used    | Python, SQL, DAX                                        |
-| Project Skills    | Orchestration, Cross-Region Design, Cost Optimisation   |
+About 90% of the data is synthetic (generated to look like athlete and coach records) and about 10% is real, from Kaggle (medal and team data). The project was built before the Games, so the synthetic portion stood in for data that didn't exist yet. The CSVs are in this repository.
 
----
+## What's here
 
-## 🗂️ Data Sources
+| File | What it is |
+|---|---|
+| `Athletes.csv`, `Coaches.csv`, `Medals.csv`, `teams.csv`, `EntriesGender.csv` | Source datasets |
+| `Pipeline.png` | Architecture diagram |
+| `Dashboard.png` | Power BI screenshot |
+| `Olympic Pipeline.pptx` | Short walkthrough deck |
+| `Paris 2024 Olympics Data Analysis – End-to-End Azure Analytics Solution.pdf` | Full write-up of each stage |
 
-- 🧠 **90% Synthetic Data** generated using ChatGPT (e.g., athletes, coaches, medals, entries by gender)
-- 📊 **10% Real Data** from Kaggle (e.g.teams)
-- 🔗 Pulled from GitHub using Azure Data Factory pipelines
+## What isn't here
 
----
+The Azure resources were removed after the project to stop the billing, and I didn't keep the Data Factory pipeline JSON or the Databricks notebooks. The PDF documents what each stage did and how it was configured. If I rebuild this, exporting the pipeline definitions into the repo is the first thing I'd do differently.
 
-## 📍 Architecture Overview
-- Data Source (ChatGPT + Kaggle via GitHub)
-- Azure Data Factory (Ingestion & Orchestration)
-- Azure Data Lake Gen2 (Raw Zone)
-- Azure Databricks (PySpark Processing & Transformation)
-- Azure Data Lake Gen2 (Transformed Zone)
-- Azure Synapse Analytics (SQL Aggregation)
-- Power BI (Interactive Dashboards)
+## What I got out of it
 
-  ![Pipeline](https://github.com/prathmeshgondkar/Paris-Olympics/blob/3401a0faed672e8f28c75cecb95d8903e68514df/Pipeline.png) 
-
-
-🌐 Cross-region deployment:  
-> • Data Factory → Southeast Asia  
-> • Databricks & Data Lake → Canada Central
-
----
-
-## 🔍 Power BI Dashboards
-
-![Power BI Dashboard](https://github.com/prathmeshgondkar/Paris-Olympics/blob/864735cfa064f538308429bda4058b4ca17aac46/Dashboard.png) 
-
-Key visualisations:
-- 👥 Participation by Gender and Sport
-- 🥇 Medal Tally by Country
-- 🗺️ Country-wise Distribution (Map View)
-- 🏃 Number of Teams per Country
-
-> Dashboards are dynamic with filters, tooltips, and drilldowns.
-
----
-
-## 🌍 Cross-Region Architecture
-
-| Component            | Azure Region      |
-|---------------------|--------------------|
-| Azure Data Factory   | Southeast Asia    |
-| Databricks           | Central Canada    |
-| Data Lake Gen2       | Central Canada    |
-
-📌 This setup demonstrates:
-- Handling **latency** between ingestion and processing
-- Planning for **data egress costs**
-- Designing real-world, **globally distributed pipelines**
-
----
-
-## ✅ Features & Highlights
-
-- ⛓️ Fully automated, modular pipeline with zero manual intervention
-- 🧠 PySpark + SQL for scalable, clean transformations
-- 🗃️ Organised data zones (Raw vs Transformed)
-- 🧩 Seamless integration between Azure services
-- 📊 Power BI dashboards tailored for decision-makers
-- 🔄 Ready for refresh scheduling and scaling
-
----
-
-## 🧠 Key Learnings & Skills Demonstrated
-
-- 📦 End-to-end Azure data engineering
-- ⚙️ Workflow design with Azure Data Factory
-- 🔥 Big data transformation using Databricks (Apache Spark)
-- 🧮 Data modelling and analysis in Synapse SQL
-- 🎨 Dashboard development with Power BI
-- 🌐 Cloud cost management and cross-region thinking
-- 🔐 Secure access, automation, and resource control
-
----
-
-## 📬 Access & Contact
-
-Interested in the code, pipeline JSONs, or a walkthrough?
-
-📩 **Get in touch via [LinkedIn](www.linkedin.com/in/prathmeshgondkar)
-
----
-
-## ⭐ Like This Project?
-
-If this helped or inspired you, consider starring ⭐ this repository.
-
----
+- How Data Factory, Databricks and Synapse hand off to each other, and where the handoffs break
+- Keeping raw and transformed data separate so a bad transformation can be rerun without re-ingesting
+- Serverless Synapse over curated parquet/CSV as a cheap query layer instead of a dedicated pool
+- The practical cost of putting services in different regions
+- 
